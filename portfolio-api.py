@@ -83,6 +83,27 @@ class PolarisPortfolioAPI:
             'application/vnd.pm.portfolio-items-1+json',
             params=params
         )
+        
+    def print_portfolio_items(self, data: Dict) -> None:
+        """
+        Print portfolio items in a readable format
+        """
+        print("\n=== Portfolio Items Summary ===")
+        print(f"Total Items: {data['_collection']['itemCount']}")
+        print(f"Current Page: {data['_collection']['currentPage']}")
+        print(f"Total Pages: {data['_collection']['pageCount']}\n")
+        
+        for item in data['_items']:
+            print("---Item Details---")
+            print(f"Name: {item['name']}")
+            print(f"ID: {item['id']}")
+            print(f"Type: {item['itemType']}")
+            print(f"Description: {item.get('description', 'N/A')}")
+            print(f"Created: {item['createdAt']}")
+            print(f"Updated: {item['updatedAt']}")
+            print(f"In Trash: {item['inTrash']}")
+            print("-" * 30)
+
 
     def create_portfolio_item(self, portfolio_id: str, data: Dict) -> Dict:
         """Create a new portfolio item"""
@@ -223,30 +244,40 @@ class PolarisPortfolioAPI:
 # Usage example
 def main():
     # Configure logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+    
+    # Your API token here
+    API_TOKEN = "s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
     
     # Create API instance
     api = PolarisPortfolioAPI(
-        base_url='https://polaris.blackduck.com',
-        api_token='your_api_token_here'
+        base_url='https://poc.polaris.blackduck.com',
+        api_token=API_TOKEN
     )
     
     try:
         # Get all portfolios
+        logger.info("Starting portfolio fetch")
         portfolios = api.get_portfolios()
         portfolio_id = portfolios['_items'][0]['id']
+        logger.info(f"Found portfolio ID: {portfolio_id}")
         
-        # Get portfolio items
+        # Get portfolio items with pagination
         portfolio_items = api.get_portfolio_items(
             portfolio_id,
             params={'_limit': 10}
         )
         
-        # Print results
-        print("Portfolio Items:", portfolio_items)
+        # Print results in readable format
+        api.print_portfolio_items(portfolio_items)
         
     except Exception as e:
-        logging.error(f"Error occurred: {str(e)}")
+        logger.error(f"Error occurred: {str(e)}")
+        raise
 
 if __name__ == '__main__':
     main()
