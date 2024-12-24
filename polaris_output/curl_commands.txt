@@ -1,0 +1,250 @@
+# Initial Environment Setup
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+
+# -------------------------------------------
+
+# Step 1: 獲取 Portfolio ID
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.portfolio-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.portfolio-1+json"
+
+# -------------------------------------------
+
+# Get Portfolio Items (Applications)
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios/$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.portfolio-items-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios/8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f/portfolio-items?_offset=0" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.portfolio-items-1+json"
+
+# -------------------------------------------
+
+# Get Portfolio Items (Filtered by App Name)
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios/$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100&name=$APP_FILTER" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.portfolio-items-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolios/8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f/portfolio-items?_offset=0" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.portfolio-items-1+json"
+
+# -------------------------------------------
+
+# Get Portfolio Subitems (Projects)
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-items/$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.portfolio-subitems-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-items/4577667b-1d49-4099-b0a9-bb33c48195da/portfolio-sub-items?_offset=0" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.portfolio-subitems-1+json"
+
+# -------------------------------------------
+
+# Get Portfolio Subitems (Filtered by Project Name)
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-items/$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100&name=$PROJECT_FILTER" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.portfolio-subitems-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-items/4577667b-1d49-4099-b0a9-bb33c48195da/portfolio-sub-items?_offset=0" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.portfolio-subitems-1+json"
+
+# -------------------------------------------
+
+# Step 4: 獲取所有分支
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# -------------------------------------------
+
+# Step 4: 使用分支名稱過濾獲取分支
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches?name=main" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches?name=main" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# -------------------------------------------
+
+# Get All Branches
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/$PORTFOLIO_SUBITEM_ID/branches" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# -------------------------------------------
+
+# Get Branches (Filtered by Branch Name)
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/$PORTFOLIO_SUBITEM_ID/branches?name=$BRANCH_FILTER" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/portfolio/portfolio-sub-items/19e77822-f26e-4766-bc97-65133299fa1f/branches?name=main" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.pm.branches-1+json"
+
+# -------------------------------------------
+
+# Get Issues from Latest Test
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+export BRANCH_ID="1ee9e0e8-57f8-47d3-ab2f-7d5b1546c2d1"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=$PORTFOLIO_SUBITEM_ID&testId=latest&_offset=0&_limit=100&_includeAttributes=true" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# -------------------------------------------
+
+# Step 5: 獲取最新測試的所有問題
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+export BRANCH_ID="1ee9e0e8-57f8-47d3-ab2f-7d5b1546c2d1"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f&testId=latest&_offset=0&_limit=100&_includeAttributes=true" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# -------------------------------------------
+
+# Step 5: 獲取下一頁的問題
+# Current Variables:
+export BASE_URL="https://poc.polaris.blackduck.com"
+export API_TOKEN="s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i"
+export PORTFOLIO_ID="8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f"
+export PORTFOLIO_ITEM_ID="4577667b-1d49-4099-b0a9-bb33c48195da"
+export PORTFOLIO_SUBITEM_ID="19e77822-f26e-4766-bc97-65133299fa1f"
+export BRANCH_ID="1ee9e0e8-57f8-47d3-ab2f-7d5b1546c2d1"
+export Issues_ID1="1efa0a52-89c8-6945-8dbc-6bdb69a02101"
+export Issues_ID2="1efa0a52-89c8-6946-8dbc-fbd08d163d21"
+
+# Command with variables:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f&testId=latest&_offset=100&_limit=100&_includeAttributes=true" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# Actual command:
+curl -X GET "https://poc.polaris.blackduck.com/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f" \
+  -H "Api-Token: s4jpgckfat47f3dcaebrc486lj8aft8d2974e3t8usg8ku3lhnd0rgb6944o5kru05ti0mac4o50i" \
+  -H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json"
+
+# -------------------------------------------
+
+
+
+ curl -X GET "${BASE_URL}/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=19e77822-f26e-4766-bc97-65133299fa1f&testId=latest&_offset=0&_limit=100&_includeAttributes=true&_filter=issue:id=in=('1efa0a52-89c8-6945-8dbc-6bdb69a02101','1efa0a52-89c8-6946-8dbc-fbd08d163d21')" \
+-H "Api-Token: ${API_TOKEN}" \
+-H "Accept: application/vnd.polaris-one.issue-management.issue-paginated-list-1+json" | jq
+
+

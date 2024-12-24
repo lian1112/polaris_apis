@@ -1,0 +1,165 @@
+{
+  "total_issues": 300,
+  "severity_summary": {
+    "critical": 0,
+    "high": 72,
+    "medium": 174,
+    "low": 54
+  },
+  "top_components": [
+    {
+      "key": "Unknown",
+      "count": 279
+    },
+    {
+      "key": "Spring Security",
+      "count": 18
+    },
+    {
+      "key": "Apache Tomcat",
+      "count": 3
+    }
+  ],
+  "issues": [
+    {
+      "id": "1efa0b5e-3e45-600e-8dbc-b9fd2a4aeebe",
+      "type": "NULL Pointer Dereference",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-476",
+      "location": "src/main/java/org/owasp/webgoat/container/service/RestartLessonService.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efa0a52-89c8-6947-8dbc-331e1fb864fa",
+      "type": "Unreachable, Unused or Dead Code",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-398",
+      "location": "src/main/resources/webgoat/static/js/libs/ace.js",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb84f8-4fe7-6388-aa88-f7f1ccc70e43",
+      "type": "Insufficient Session Expiration",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-613",
+      "location": "src/main/java/org/owasp/webgoat/lessons/jwt/JWTRefreshEndpoint.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb84f8-4fe7-63e2-aa88-57f3a974c5db",
+      "type": "Server-Side Request Forgery",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-918",
+      "location": "src/main/java/org/owasp/webgoat/lessons/ssrf/SSRFTask2.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb5c35-f907-6f0f-9db9-97699b92d7df",
+      "type": "Use of Hard-coded Credentials",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-798",
+      "location": "src/test/java/org/owasp/webgoat/webwolf/jwt/JWTTokenTest.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb5c35-f907-6f0d-9db9-739623ea6f1e",
+      "type": "Use of Hard-coded Credentials",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-798",
+      "location": "src/test/java/org/owasp/webgoat/webwolf/jwt/JWTTokenTest.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb84f8-4fe2-65b2-aa88-9355ce435b97",
+      "type": "Use of Hard-coded Cryptographic Key",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-321",
+      "location": "src/main/java/org/owasp/webgoat/lessons/jwt/JWTVotesEndpoint.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efb84f8-4fe7-63d7-aa88-291fb8011365",
+      "type": "SQL Injection",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-89",
+      "location": "src/main/java/org/owasp/webgoat/lessons/sqlinjection/introduction/SqlInjectionLesson5b.java",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efa0a52-89c8-692c-8dbc-6dc9cb473f25",
+      "type": "Unreachable, Unused or Dead Code",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-561",
+      "location": "src/main/resources/webgoat/static/plugins/bootstrap-wysihtml5/js/wysihtml5-0.3.0.js",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    },
+    {
+      "id": "1efa0a52-89c8-692b-8dbc-4dba434a4b87",
+      "type": "Unreachable, Unused or Dead Code",
+      "severity": "medium",
+      "description": null,
+      "cwe": "CWE-561",
+      "location": "src/main/resources/webgoat/static/plugins/bootstrap-wysihtml5/js/wysihtml5-0.3.0.js",
+      "published_date": null,
+      "component_name": "Unknown",
+      "component_version": "Unknown",
+      "overall_score": null,
+      "vulnerability_id": null,
+      "vulnerability_source": "Unknown"
+    }
+  ]
+}

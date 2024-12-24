@@ -38,9 +38,21 @@ if [ -z "$API_TOKEN" ]; then
     usage
 fi
 
-# 創建輸出目錄
+# 創建輸出目錄和curl命令文件
 OUTPUT_DIR="polaris_output"
 mkdir -p "$OUTPUT_DIR"
+CURL_FILE="$OUTPUT_DIR/curl_commands.txt"
+ID_FILE="$OUTPUT_DIR/id_variables.txt"
+
+# 清空或創建文件
+echo "# Polaris API Curl Commands" > "$CURL_FILE"
+echo "# Polaris API ID Variables" > "$ID_FILE"
+
+# 記錄環境變數
+echo "# Environment Variables" >> "$ID_FILE"
+echo "export BASE_URL=\"$BASE_URL\"" >> "$ID_FILE"
+echo "export API_TOKEN=\"$API_TOKEN\"" >> "$ID_FILE"
+echo "" >> "$ID_FILE"
 
 # Common headers for curl
 COMMON_HEADERS=(
@@ -52,13 +64,63 @@ print_curl_command() {
     local accept_header="$2"
     local description="$3"
     
+    # 輸出到螢幕
     echo "=== $description ==="
     echo "curl -X GET \"$url\" \\"
     echo "  -H \"Api-Token: $API_TOKEN\" \\"
     echo "  -H \"Accept: $accept_header\""
     echo
+    
+    # 替換變數為實際值
+    local actual_url=$(eval echo "$url")
+    
+    # 輸出到文件
+    echo "# $description" >> "$CURL_FILE"
+    echo "# Current Variables:" >> "$CURL_FILE"
+    echo "export BASE_URL=\"$BASE_URL\"" >> "$CURL_FILE"
+    echo "export API_TOKEN=\"$API_TOKEN\"" >> "$CURL_FILE"
+    
+    # 根據當前步驟輸出相應的ID變數
+    if [ ! -z "$PORTFOLIO_ID" ]; then
+        echo "export PORTFOLIO_ID=\"$PORTFOLIO_ID\"" >> "$CURL_FILE"
+    fi
+    if [ ! -z "$PORTFOLIO_ITEM_ID" ]; then
+        echo "export PORTFOLIO_ITEM_ID=\"$PORTFOLIO_ITEM_ID\"" >> "$CURL_FILE"
+    fi
+    if [ ! -z "$PORTFOLIO_SUBITEM_ID" ]; then
+        echo "export PORTFOLIO_SUBITEM_ID=\"$PORTFOLIO_SUBITEM_ID\"" >> "$CURL_FILE"
+    fi
+    if [ ! -z "$BRANCH_ID" ]; then
+        echo "export BRANCH_ID=\"$BRANCH_ID\"" >> "$CURL_FILE"
+    fi
+    echo "" >> "$CURL_FILE"
+    
+    # 輸出curl命令（帶變數）
+    echo "# Command with variables:" >> "$CURL_FILE"
+    echo "curl -X GET \"$url\" \\" >> "$CURL_FILE"
+    echo "  -H \"Api-Token: \$API_TOKEN\" \\" >> "$CURL_FILE"
+    echo "  -H \"Accept: $accept_header\"" >> "$CURL_FILE"
+    echo "" >> "$CURL_FILE"
+    
+    # 輸出實際的curl命令
+    echo "# Actual command:" >> "$CURL_FILE"
+    echo "curl -X GET \"$actual_url\" \\" >> "$CURL_FILE"
+    echo "  -H \"Api-Token: $API_TOKEN\" \\" >> "$CURL_FILE"
+    echo "  -H \"Accept: $accept_header\"" >> "$CURL_FILE"
+    echo "" >> "$CURL_FILE"
+    
+    # 分隔線
+    echo "# -------------------------------------------" >> "$CURL_FILE"
+    echo "" >> "$CURL_FILE"
 }
 
+# 記錄初始環境設置
+echo "# Initial Environment Setup" > "$CURL_FILE"
+echo "export BASE_URL=\"$BASE_URL\"" >> "$CURL_FILE"
+echo "export API_TOKEN=\"$API_TOKEN\"" >> "$CURL_FILE"
+echo "" >> "$CURL_FILE"
+echo "# -------------------------------------------" >> "$CURL_FILE"
+echo "" >> "$CURL_FILE"
 # Step 1: Get Portfolio ID
 echo "Step 1: Getting Portfolio ID..."
 
@@ -80,15 +142,31 @@ echo "$PORTFOLIO_RESPONSE" | jq '{
 
 # Extract Portfolio ID using jq
 PORTFOLIO_ID=$(echo "$PORTFOLIO_RESPONSE" | jq -r '._items[0].id')
+echo "export PORTFOLIO_ID=\"$PORTFOLIO_ID\"" >> "$ID_FILE"
+
 export PORTFOLIO_ID
 echo "Portfolio ID: $PORTFOLIO_ID"
 
 # Step 2: Get Portfolio Items (Applications)
-echo -e "\nStep 2: Getting Portfolio Items..."
+echo "=== Step 2: Getting Portfolio Items ==="
 print_curl_command \
-    "$BASE_URL/api/portfolio/portfolios/$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100" \
+    "$BASE_URL/api/portfolio/portfolios/\$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100" \
     "application/vnd.pm.portfolio-items-1+json" \
-    "Step 2: 獲取 Portfolio Items"
+    "Get Portfolio Items (Applications)"
+
+if [ ! -z "$APP_FILTER" ]; then
+    print_curl_command \
+        "$BASE_URL/api/portfolio/portfolios/\$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100&name=\$APP_FILTER" \
+        "application/vnd.pm.portfolio-items-1+json" \
+        "Get Portfolio Items (Filtered by App Name)"
+fi
+
+PORTFOLIO_ITEMS_RESPONSE=$(curl -s -H "Api-Token: $API_TOKEN" \
+    -H "Accept: application/vnd.pm.portfolio-items-1+json" \
+    "$BASE_URL/api/portfolio/portfolios/$PORTFOLIO_ID/portfolio-items?_offset=0&_limit=100")
+
+PORTFOLIO_ITEM_ID=$(echo "$PORTFOLIO_ITEMS_RESPONSE" | jq -r '._items[0].id')
+echo "export PORTFOLIO_ITEM_ID=\"$PORTFOLIO_ITEM_ID\"" >> "$ID_FILE"
 
 
 # Function to get portfolio items with pagination
@@ -178,17 +256,25 @@ export PORTFOLIO_ITEM_ID
 echo "Portfolio Item ID: $PORTFOLIO_ITEM_ID"
 
 # Step 3: Get Portfolio Subitems (Projects)
-echo -e "\nStep 3: Getting Portfolio Subitems..."
-
+echo "=== Step 3: Getting Portfolio Subitems ==="
 print_curl_command \
-    "$BASE_URL/api/portfolio/portfolio-items/$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100" \
+    "$BASE_URL/api/portfolio/portfolio-items/\$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100" \
     "application/vnd.pm.portfolio-subitems-1+json" \
-    "Step 3: 獲取 Portfolio Subitems"
+    "Get Portfolio Subitems (Projects)"
 
-print_curl_command \
-    "$BASE_URL/api/portfolio/portfolio-items/$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100&name=$PROJECT_FILTER" \
-    "application/vnd.pm.portfolio-subitems-1+json" \
-    "Step 3: 使用專案名稱過濾獲取 Portfolio Subitems"
+if [ ! -z "$PROJECT_FILTER" ]; then
+    print_curl_command \
+        "$BASE_URL/api/portfolio/portfolio-items/\$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100&name=\$PROJECT_FILTER" \
+        "application/vnd.pm.portfolio-subitems-1+json" \
+        "Get Portfolio Subitems (Filtered by Project Name)"
+fi
+
+PORTFOLIO_SUBITEMS_RESPONSE=$(curl -s -H "Api-Token: $API_TOKEN" \
+    -H "Accept: application/vnd.pm.portfolio-subitems-1+json" \
+    "$BASE_URL/api/portfolio/portfolio-items/$PORTFOLIO_ITEM_ID/portfolio-sub-items?_offset=0&_limit=100")
+
+PORTFOLIO_SUBITEM_ID=$(echo "$PORTFOLIO_SUBITEMS_RESPONSE" | jq -r '._items[0].id')
+echo "export PORTFOLIO_SUBITEM_ID=\"$PORTFOLIO_SUBITEM_ID\"" >> "$ID_FILE"
 
 # Function to get portfolio subitems with pagination
 get_all_portfolio_subitems() {
@@ -290,7 +376,25 @@ print_curl_command \
     "Step 4: 使用分支名稱過濾獲取分支"
 
 # Step 4: Get Branches
-echo -e "\nStep 4: Getting Branches..."
+echo "=== Step 4: Getting Branches ==="
+print_curl_command \
+    "$BASE_URL/api/portfolio/portfolio-sub-items/\$PORTFOLIO_SUBITEM_ID/branches" \
+    "application/vnd.pm.branches-1+json" \
+    "Get All Branches"
+
+if [ ! -z "$BRANCH_FILTER" ]; then
+    print_curl_command \
+        "$BASE_URL/api/portfolio/portfolio-sub-items/\$PORTFOLIO_SUBITEM_ID/branches?name=\$BRANCH_FILTER" \
+        "application/vnd.pm.branches-1+json" \
+        "Get Branches (Filtered by Branch Name)"
+fi
+
+BRANCHES_RESPONSE=$(curl -s -H "Api-Token: $API_TOKEN" \
+    -H "Accept: application/vnd.pm.branches-1+json" \
+    "$BASE_URL/api/portfolio/portfolio-sub-items/$PORTFOLIO_SUBITEM_ID/branches")
+
+BRANCH_ID=$(echo "$BRANCHES_RESPONSE" | jq -r '._items[0].id')
+echo "export BRANCH_ID=\"$BRANCH_ID\"" >> "$ID_FILE"
 
 QUERY_PARAMS=""
 if [ ! -z "$BRANCH_FILTER" ]; then
@@ -329,6 +433,13 @@ echo "Branch ID: $BRANCH_ID"
 
 # Step 5: Get Issues from Latest Test
 echo -e "\nStep 5: Getting Issues from Latest Test..."
+echo "=== Step 5: Getting Issues ==="
+print_curl_command \
+    "$BASE_URL/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=\$PORTFOLIO_SUBITEM_ID&testId=latest&_offset=0&_limit=100&_includeAttributes=true" \
+    "application/vnd.polaris-one.issue-management.issue-paginated-list-1+json" \
+    "Get Issues from Latest Test"
+
+
 print_curl_command \
     "$BASE_URL/api/specialization-layer-service/issues/_actions/list?portfolioSubItemId=$PORTFOLIO_SUBITEM_ID&testId=latest&_offset=0&_limit=100&_includeAttributes=true" \
     "application/vnd.polaris-one.issue-management.issue-paginated-list-1+json" \
@@ -493,3 +604,5 @@ jq '{
 echo "完整的 issues 已保存到 $OUTPUT_DIR/5_issues_all.json"
 echo "統計資訊已保存到 $OUTPUT_DIR/5_issues_statistics.json"
 echo "摘要報告已保存到 $OUTPUT_DIR/5_issues_summary.json"
+echo "Curl命令已保存到: $CURL_FILE"
+echo "ID變數已保存到: $ID_FILE"

@@ -1,0 +1,14 @@
+{
+  "total_items": 1,
+  "applications": [
+    {
+      "id": "4577667b-1d49-4099-b0a9-bb33c48195da",
+      "name": "allenl_applications",
+      "description": null,
+      "itemType": "APPLICATION",
+      "createdAt": "2024-11-12 02:30:41",
+      "updatedAt": "2024-11-12 02:53:21",
+      "inTrash": false
+    }
+  ]
+}

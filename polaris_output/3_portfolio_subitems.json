@@ -1,0 +1,15 @@
+{
+  "total_items": 1,
+  "projects": [
+    {
+      "id": "19e77822-f26e-4766-bc97-65133299fa1f",
+      "name": "WebGoat",
+      "description": "WebGoat_description",
+      "subItemType": "PROJECT",
+      "createdAt": "2024-11-12 02:54:54",
+      "updatedAt": "2024-11-12 02:54:54",
+      "inTrash": false,
+      "portfolioItemId": "4577667b-1d49-4099-b0a9-bb33c48195da"
+    }
+  ]
+}

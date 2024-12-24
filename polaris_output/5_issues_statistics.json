@@ -1,0 +1,48 @@
+{
+  "total_count": 300,
+  "severity_distribution": {
+    "critical": 0,
+    "high": 72,
+    "medium": 174,
+    "low": 54
+  },
+  "cwe_distribution": {
+    "CWE-484": 6,
+    "CWE-398": 18,
+    "CWE-79": 6,
+    "CWE-404": 27,
+    "CWE-20": 9,
+    "CWE-863": 9,
+    "CWE-613": 30,
+    "CWE-259": 3,
+    "CWE-22": 15,
+    "CWE-476": 15,
+    "CWE-321": 6,
+    "CWE-209": 3,
+    "CWE-760": 3,
+    "CWE-345": 9,
+    "CWE-326": 3,
+    "CWE-269": 3,
+    "CWE-798": 39,
+    "CWE-319": 3,
+    "CWE-759": 3,
+    "CWE-89": 57,
+    "CWE-502": 3,
+    "CWE-313": 6,
+    "CWE-261": 6,
+    "CWE-328": 3,
+    "CWE-561": 6,
+    "CWE-501": 3,
+    "CWE-820": 3,
+    "CWE-918": 3
+  },
+  "component_distribution": {
+    "Unknown": 279,
+    "Apache Tomcat": 3,
+    "Spring Security": 18
+  },
+  "vulnerability_source_distribution": {
+    "Unknown": 279,
+    "BDSA": 21
+  }
+}

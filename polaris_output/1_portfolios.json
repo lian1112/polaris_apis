@@ -1,0 +1,31 @@
+{
+  "portfolio_id": "8ad7aaa9-dc3b-4ced-a0b0-8ef308dfef6f",
+  "total_items": 1,
+  "links": [
+    {
+      "href": "https://poc.polaris.blackduck.com/portfolios?_offset=0&_limit=100",
+      "rel": "first",
+      "method": "GET"
+    },
+    {
+      "href": "https://poc.polaris.blackduck.com/portfolios?_offset=0&_limit=100",
+      "rel": "next",
+      "method": "GET"
+    },
+    {
+      "href": "https://poc.polaris.blackduck.com/portfolios?_offset=0&_limit=100",
+      "rel": "prev",
+      "method": "GET"
+    },
+    {
+      "href": "https://poc.polaris.blackduck.com/portfolios?_offset=0&_limit=100",
+      "rel": "last",
+      "method": "GET"
+    },
+    {
+      "href": "https://poc.polaris.blackduck.com/portfolios?_offset=0&_limit=100",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}
