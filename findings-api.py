@@ -1,8 +1,9 @@
 # findings.py - Polaris Findings API Client
 
 import requests
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Iterator
 import logging
+import time
 
 class PolarisFindingsAPI:
     """
@@ -23,11 +24,16 @@ class PolarisFindingsAPI:
             'Api-Token': api_token
         }
         self.logger = logging.getLogger(__name__)
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Api-Token': api_token,
+            'Accept-Language': 'en-US'
+        })
 
     def _make_request(self, method: str, endpoint: str, accept_type: str, 
                      params: Optional[Dict] = None, data: Optional[Dict] = None) -> Dict:
         """
-        Make HTTP request to Polaris API
+        Make HTTP request to Polaris API with improved error handling
         
         Args:
             method: HTTP method (GET, POST, etc.)
@@ -45,15 +51,22 @@ class PolarisFindingsAPI:
         url = f"{self.base_url}{endpoint}"
         
         try:
-            response = requests.request(
+            response = self.session.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
-                json=data
+                json=data,
+                timeout=30  # Add timeout
             )
             response.raise_for_status()
             return response.json()
+        except requests.exceptions.Timeout:
+            self.logger.error("Request timed out")
+            raise
+        except requests.exceptions.HTTPError as e:
+            self.logger.error(f"HTTP error occurred: {e.response.text}")
+            raise
         except requests.exceptions.RequestException as e:
             self.logger.error(f"API request failed: {str(e)}")
             raise
@@ -102,6 +115,112 @@ class PolarisFindingsAPI:
             '/api/findings/issues',
             'application/vnd.polaris.findings.issues-1+json',
             params=default_params
+        )
+
+    def get_issues_paginated(self, project_id: str, page_size: int = 100) -> Iterator[Dict]:
+        """
+        Get all issues using pagination
+        
+        Args:
+            project_id: Project ID
+            page_size: Number of items per page
+            
+        Yields:
+            Each page of issues
+        """
+        params = {
+            'projectId': project_id,
+            '_first': page_size,
+            '_includeType': True,
+            '_includeOccurrenceProperties': True,
+            '_includeTriageProperties': True
+        }
+        
+        while True:
+            response = self._make_request(
+                'GET',
+                '/api/findings/issues',
+                'application/vnd.polaris.findings.issues-1+json',
+                params=params
+            )
+            
+            yield response
+            
+            # Check for next page
+            next_link = next(
+                (link for link in response.get('_links', []) 
+                 if link.get('rel') == 'next'),
+                None
+            )
+            
+            if not next_link:
+                break
+                
+            # Extract cursor from next link
+            cursor = next_link['href'].split('_cursor=')[1].split('&')[0]
+            params['_cursor'] = cursor
+
+    def get_issues_with_filter(self, project_id: str, 
+                             severity: Optional[str] = None,
+                             language: Optional[str] = None,
+                             triage_status: Optional[str] = None,
+                             custom_filter: Optional[str] = None) -> Dict:
+        """
+        Get issues with RSQL filtering
+        
+        Args:
+            project_id: Project ID
+            severity: Filter by severity (low/medium/high/critical)
+            language: Filter by programming language
+            triage_status: Filter by triage status
+            custom_filter: Custom RSQL filter string
+        """
+        filters = []
+        
+        if severity:
+            filters.append(f"occurrence:severity=='{severity}'")
+        if language:
+            filters.append(f"occurrence:language=='{language}'")
+        if triage_status:
+            filters.append(f"triage:status=='{triage_status}'")
+        if custom_filter:
+            filters.append(custom_filter)
+            
+        params = {
+            'projectId': project_id,
+            '_includeType': True,
+            '_includeOccurrenceProperties': True,
+            '_includeTriageProperties': True
+        }
+        
+        if filters:
+            params['_filter'] = ';'.join(filters)
+            
+        return self._make_request(
+            'GET',
+            '/api/findings/issues',
+            'application/vnd.polaris.findings.issues-1+json',
+            params=params
+        )
+
+    def get_group_counts(self, project_id: str, group_by: str) -> Dict:
+        """
+        Get counts grouped by a specific field
+        
+        Args:
+            project_id: Project ID
+            group_by: Field to group by (e.g., 'occurrence:severity', 'occurrence:language')
+        """
+        params = {
+            'projectId': project_id,
+            '_group': group_by
+        }
+        
+        return self._make_request(
+            'GET',
+            '/api/findings/issues/_actions/count',
+            'application/vnd.polaris.findings.issues-1+json',
+            params=params
         )
 
     def get_issue_triage_history(self, issue_id: str, app_id: str = None,
@@ -271,6 +390,27 @@ class PolarisFindingsAPI:
             'application/vnd.polaris.findings.occurrences-1+json',
             params=params
         )
+
+    def get_occurrence_assist_with_retry(self, occurrence_id: str, project_id: str,
+                                       max_retries: int = 3, delay: float = 1.0) -> Dict:
+        """
+        Get AI assistance with retry logic
+        """
+        params = {'projectId': project_id}
+        
+        for attempt in range(max_retries):
+            try:
+                return self._make_request(
+                    'GET',
+                    f'/api/findings/occurrences/{occurrence_id}/assist',
+                    'application/vnd.polaris.findings.occurrences-1+json',
+                    params=params
+                )
+            except requests.exceptions.RequestException as e:
+                if attempt == max_retries - 1:
+                    raise
+                self.logger.warning(f"Retry {attempt + 1}/{max_retries} after error: {str(e)}")
+                time.sleep(delay * (attempt + 1))  # Exponential backoff
 
     def get_occurrence_artifact(self, occurrence_id: str, artifact_id: str,
                               app_id: str = None, project_id: str = None) -> Dict:
