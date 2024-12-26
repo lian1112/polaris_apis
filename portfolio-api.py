@@ -70,7 +70,7 @@ class PolarisPortfolioAPI:
         """Get all portfolios."""
         return self._make_request(
             'GET',
-            '/portfolios',
+            '/api/portfolio/portfolios',
             'application/vnd.pm.portfolio-1+json'
         )
 
@@ -103,7 +103,7 @@ class PolarisPortfolioAPI:
 
         return self._make_request(
             'GET',
-            f'/portfolios/{portfolio_id}/portfolio-items',
+            f'/api/portfolio/portfolios/{portfolio_id}/portfolio-items',
             'application/vnd.pm.portfolio-items-1+json',
             params=params
         )
@@ -251,17 +251,16 @@ class PolarisPortfolioAPI:
     def get_issues(self, subitem_id: str, params: Optional[Dict] = None) -> Dict:
         """Get issues for a portfolio subitem"""
         default_params = {
-            'portfolioSubItemId': subitem_id,
-            'testId': 'latest',
-            '_includeAttributes': True
+            'projectId': subitem_id,
+            '_first': 100,
         }
         if params:
             default_params.update(params)
             
         return self._make_request(
             'GET',
-            '/api/specialization-layer-service/issues/_actions/list',
-            'application/vnd.polaris-one.issue-management.issue-paginated-list-1+json',
+            '/api/findings/issues',
+            'application/vnd.polaris.findings.issues-1+json',
             params=default_params
         )
 
