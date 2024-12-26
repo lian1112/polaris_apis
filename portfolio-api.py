@@ -1,6 +1,15 @@
 import requests
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 import logging
+import os
+from dataclasses import dataclass
+
+@dataclass
+class PaginationParams:
+    limit: int = 100
+    offset: int = 0
+    filter: Optional[str] = None
+    sort: Optional[str] = None
 
 class PolarisPortfolioAPI:
     """
@@ -57,11 +66,11 @@ class PolarisPortfolioAPI:
             raise
 
     # Portfolio endpoints
-    def get_portfolios(self) -> Dict:
-        """Get all portfolios"""
+    def get_portfolios(self) -> Dict[str, Any]:
+        """Get all portfolios."""
         return self._make_request(
             'GET',
-            '/api/portfolio/portfolios',
+            '/portfolios',
             'application/vnd.pm.portfolio-1+json'
         )
 
@@ -75,11 +84,26 @@ class PolarisPortfolioAPI:
         )
 
     # Portfolio Items endpoints
-    def get_portfolio_items(self, portfolio_id: str, params: Optional[Dict] = None) -> Dict:
-        """Get all portfolio items"""
+    def get_portfolio_items(
+        self, 
+        portfolio_id: str, 
+        pagination: Optional[PaginationParams] = None
+    ) -> Dict[str, Any]:
+        """Get portfolio items with pagination."""
+        params = {}
+        if pagination:
+            params.update({
+                '_limit': pagination.limit,
+                '_offset': pagination.offset
+            })
+            if pagination.filter:
+                params['_filter'] = pagination.filter
+            if pagination.sort:
+                params['_sort'] = pagination.sort
+
         return self._make_request(
             'GET',
-            f'/api/portfolio/portfolios/{portfolio_id}/portfolio-items',
+            f'/portfolios/{portfolio_id}/portfolio-items',
             'application/vnd.pm.portfolio-items-1+json',
             params=params
         )
@@ -263,17 +287,18 @@ def main():
         # Get all portfolios
         logger.info("Starting portfolio fetch")
         portfolios = api.get_portfolios()
-        if portfolios['_items']:
-            portfolio_id = portfolios['_items'][0]['id']
-            logger.info(f"Found portfolio ID: {portfolio_id}")
-        else:
+        if not portfolios.get('_items'):
             logger.error("No portfolios found")
             return
+            
+        portfolio_id = portfolios['_items'][0]['id']
+        logger.info(f"Found portfolio ID: {portfolio_id}")
         
         # Get portfolio items with pagination
+        pagination = PaginationParams(limit=10)
         portfolio_items = api.get_portfolio_items(
             portfolio_id,
-            params={'_limit': 10}
+            pagination=pagination
         )
         
         # Print results in readable format
