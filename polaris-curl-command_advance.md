@@ -137,6 +137,7 @@ curl -s --fail --compressed \
   -H "Accept: application/vnd.polaris.findings.issues-1+json" \
   -H "Accept-Language: en-US" \
   -G \
+  --data-urlencode "_first=1" \
   --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
   --data-urlencode "branchId=$BRANCH_ID" \
   --data-urlencode "testId=latest" \
@@ -147,6 +148,49 @@ curl -s --fail --compressed \
   --data-urlencode "_includeTriageProperties=true" \
   --data-urlencode "_includeFirstDetectedOn=true" \
   --data-urlencode "_includeContext=true" | jq
+
+curl 基本參數
+
+-s: (silent) 不顯示進度條和錯誤信息
+--fail: 在 HTTP 錯誤時立即終止
+--compressed: 支持壓縮傳輸
+-X GET: 指定 HTTP 方法為 GET
+-G: 將數據附加到 URL 上而不是通過 POST 傳送
+-H: 設置 HTTP 標頭
+
+HTTP 標頭參數
+
+Api-Token: API 認證令牌
+Accept: 指定接受的回應格式為 Polaris findings issues JSON 格式
+Accept-Language: 指定響應使用的語言為英文
+
+查詢參數 (URL Parameters)
+
+projectId: 指定要查詢的專案 ID
+branchId: 指定要查詢的分支 ID
+testId=latest: 只包含最新測試中檢測到的問題
+
+排序和過濾參數
+
+_sort=occurrence:severity|desc: 按嚴重性降序排序
+_filter=occurrence:severity=='high': 只顯示高嚴重性的問題
+
+--data-urlencode 是 curl 的參數：
+用於對數據進行 URL 編碼
+確保特殊字符能被正確傳輸
+會自動將參數加到 URL 查詢字串中
+
+包含附加資訊的參數
+
+_includeType=true: 包含問題類型資訊
+_includeOccurrenceProperties=true: 包含問題屬性資訊
+_includeTriageProperties=true: 包含分類狀態資訊
+_includeFirstDetectedOn=true: 包含首次檢測時間
+_includeContext=true: 包含問題上下文資訊
+
+輸出處理
+
+| jq: 使用 jq 工具格式化 JSON 輸出
 ```
 
 #### 2.3.2 使用 RSQL 查詢多個 Issues
@@ -221,14 +265,42 @@ curl -s --fail --compressed \
 ### 3.2 複雜 RSQL 查詢
 
 ```bash
+先只查詢所有問題，看看實際的值：
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_includeOccurrenceProperties=true" \
+  --data-urlencode "_includeTriageProperties=true" \
+  --data-urlencode "_first=1" | jq '.'
+
+從輸出結果可以看到正確的值：
+
+severity 是在 occurrenceProperties 中：
+"key": "severity", "value": "medium"
+所以值是小寫：medium, high, critical
+language 也在 occurrenceProperties 中：
+"key": "language", "value": "JavaScript"
+所以語言首字母需要大寫：JavaScript, Java
+triage status 在 triageProperties 中：
+"key": "status", "value": "not-dismissed"
+"key": "dismissal-reason", "value": "unset"
+
+
+
+所以正確的查詢應該是：
 # 組合多個條件的查詢
 curl -s --fail --compressed \
   -X GET "$BASE_URL/api/findings/issues" \
   -H "Api-Token: $API_TOKEN" \
   -H "Accept: application/vnd.polaris.findings.issues-1+json" \
   -G \
-  --data-urlencode "_filter=occurrence:severity=='high';occurrence:language=='Java';triage:status=='new'" \
-  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" | jq
+  --data-urlencode "_filter=occurrence:severity=='medium';occurrence:language=='Java';triage:status=='not-dismissed'" \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_includeOccurrenceProperties=true" \
+  --data-urlencode "_includeTriageProperties=true" | jq
 ```
 
 ## 四、最佳實踐
@@ -251,3 +323,79 @@ curl -s --fail --compressed \
 - 定期更換 API Token
 - 避免暴露敏感資訊
 
+四,其他技巧
+根據 Findings_GET.txt 文件，我們有幾種方式可以找到所有可能的值：
+
+1. 透過 API 查詢所有資料，然後用 jq 來過濾出所有可能的值：
+
+```bash
+# 查詢 severity 的所有可能值
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_includeOccurrenceProperties=true" \
+  --data-urlencode "_first=100" | \
+  jq '[._items[].occurrenceProperties[] | select(.key=="severity").value] | unique'
+
+# 查詢 language 的所有可能值
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_includeOccurrenceProperties=true" \
+  --data-urlencode "_first=100" | \
+  jq '[._items[].occurrenceProperties[] | select(.key=="language").value] | unique'
+
+# 查詢 triage status 的所有可能值
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_includeTriageProperties=true" \
+  --data-urlencode "_first=100" | \
+  jq '[._items[].triageProperties[] | select(.key=="status").value] | unique'
+```
+
+2. 使用 count API 加上分組功能：
+
+```bash
+# 按 severity 分組計數
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues/_actions/count" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_group=occurrence:severity" | jq '._items'
+
+# 按 language 分組計數
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues/_actions/count" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_group=occurrence:language" | jq '._items'
+
+# 按 triage status 分組計數
+curl -s --fail --compressed \
+  -X GET "$BASE_URL/api/findings/issues/_actions/count" \
+  -H "Api-Token: $API_TOKEN" \
+  -H "Accept: application/vnd.polaris.findings.issues-1+json" \
+  -G \
+  --data-urlencode "projectId=$PORTFOLIO_SUBITEM_ID_PROJECT" \
+  --data-urlencode "_group=triage:status" | jq '._items'
+```
+
+這兩種方法都可以幫助你找到所有可能的值：
+- 第一種方法會直接列出實際存在的所有不同值
+- 第二種方法會同時給你每個值的計數，讓你知道有多少個問題屬於每個分類
+
+建議都試試看，這樣可以更全面地了解你的專案中實際使用的值。
