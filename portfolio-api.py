@@ -263,8 +263,12 @@ def main():
         # Get all portfolios
         logger.info("Starting portfolio fetch")
         portfolios = api.get_portfolios()
-        portfolio_id = portfolios['_items'][0]['id']
-        logger.info(f"Found portfolio ID: {portfolio_id}")
+        if portfolios['_items']:
+            portfolio_id = portfolios['_items'][0]['id']
+            logger.info(f"Found portfolio ID: {portfolio_id}")
+        else:
+            logger.error("No portfolios found")
+            return
         
         # Get portfolio items with pagination
         portfolio_items = api.get_portfolio_items(
